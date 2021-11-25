@@ -1,0 +1,60 @@
+// index.js
+
+const { getAll } = require("database.js");
+
+exports.handler = async (event, context, callback) => {
+  const { result, payload } = await getAll();
+
+  const status = result.includes("SUCCESS") ? 200 : 400;
+
+  const responseBody = {
+    message: result,
+    payload: payload,
+  };
+
+  const response = {
+    statusCode: status,
+    body: JSON.stringify(responseBody),
+  };
+
+  return response;
+};
+
+// database.js
+
+const AWS = require("aws-sdk");
+
+AWS.config.update({ region: "ca-central-1" });
+
+const docClient = new AWS.DynamoDB.DocumentClient();
+
+async function getAll() {
+  const params = {
+    TableName: "MyTable",
+  };
+
+  let resultItems = [];
+  let items;
+
+  try {
+    do {
+      items = await docClient.scan(params).promise();
+      items.Items.forEach((item) => resultItems.push(item));
+      params.ExclusiveStartKey = items.LastEvaluatedKey;
+    } while (typeof items.LastEvaluatedKey !== "undefined");
+  } catch (err) {
+    console.log("Failed to retrieve records", err);
+
+    return {
+      result: "ERROR: Failed to retrieve records",
+      payload: "",
+    };
+  }
+
+  return {
+    result: "SUCCESS: Retrieving records",
+    payload: resultItems,
+  };
+}
+
+module.exports = { getAll };
