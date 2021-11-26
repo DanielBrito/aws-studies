@@ -51,7 +51,11 @@ async function getAllCondition() {
     } while (typeof items.LastEvaluatedKey !== "undefined");
   } catch (err) {
     console.log("Failed to retrieve records", err);
-    return "ERROR: Failed to retrieve records";
+    
+    return {
+      result: "ERROR: Failed to retrieve records",
+      payload: "",
+    };
   }
 
   return {
