@@ -10,3 +10,8 @@ These experiments cover different tools and concepts related to AWS from my [sel
 - Amazon Cognito
 - AWS Amplify
 - AWS IAM
+
+## :card_file_box: Resources
+
+- [Serverless Land](https://serverlessland.com/)
+
